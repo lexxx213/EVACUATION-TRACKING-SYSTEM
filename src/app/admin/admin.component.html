@@ -1,0 +1,510 @@
+<div class="admin-dashboard">
+    <header class="top-bar">
+        <div class="title">
+            <h3>Evacuation Tracking System</h3>
+        </div>
+
+        <nav class="top-actions">
+            <div class="search-box-wrapper">
+                <div class="search-box">
+                    <input type="search" placeholder="Search evacuee name" [(ngModel)]="searchQuery"
+                        (input)="onSearchInput()" (focus)="onSearchFocus()" (blur)="hideSuggestions()"
+                        (keyup.enter)="searchEvacuee()" />
+
+                    <button class="search-btn" type="button" (click)="searchEvacuee()">
+                        <img src="assets/icons/search.png" alt="search" />
+                    </button>
+                </div>
+
+                <div class="search-suggestions" *ngIf="showSuggestions && searchSuggestions.length > 0">
+                    <div class="suggestion-item" *ngFor="let e of searchSuggestions" (mousedown)="selectSuggestion(e)">
+                        <div class="suggestion-name">
+                            {{ e.lastname }}, {{ e.firstname }} {{ e.middlename || '' }}
+                        </div>
+
+                        <div class="suggestion-meta">
+                            {{ e.evacuation_location || 'No assigned center' }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-suggestions empty"
+                    *ngIf="showSuggestions && searchSuggestions.length === 0 && searchQuery.trim()">
+                    <div class="suggestion-item no-result">
+                        No matching evacuee found
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" (click)="openTerms()">Terms of Use</button>
+            <button type="button" (click)="openContact()">Emergency Contact</button>
+            <button class="logout-btn" type="button" (click)="logout()">
+                <img src="assets/icons/logout.png" alt="logout" class="btn-icon" />
+            </button>
+        </nav>
+    </header>
+
+    <aside class="sidebar">
+        <div class="profile-section">
+            <img src="assets/icons/user.png" alt="Admin" class="sidebar-avatar" />
+            <h3 class="admin-name">Admin</h3>
+        </div>
+
+        <br />
+        <br />
+        <br />
+
+        <button class="menu-btn" type="button" (click)="showDashboard()">
+            <img src="assets/icons/menu.png" alt="Dashboard" />
+            <span>Dashboard</span>
+        </button>
+
+        <button class="menu-btn" type="button" (click)="loadEvacuationCenters()">
+            <img src="assets/icons/health-clinic.png" alt="Evacuation Centers" />
+            <span>Evacuation Centers</span>
+        </button>
+
+        <button class="menu-btn" type="button" (click)="loadReports()">
+            <img src="assets/icons/bar-chart.png" alt="Reports" />
+            <span>Reports</span>
+        </button>
+
+        <div class="sidebar-footer">
+            <p>© 2026 EVTS System. All rights reserved.</p>
+            <p>Developed by Alexander Ramos & Antonette Cabanla</p>
+            <p>BS Computer Engineering •</p>
+            <p>University of St. Louis Tuguegarao</p>
+        </div>
+    </aside>
+
+    <main class="main-panel">
+        <!-- DASHBOARD -->
+        <div *ngIf="activeView === 'dashboard'" class="dashboard-layout">
+            <div class="dashboard-left">
+                <div class="page-header">
+                    <h2>Admin Dashboard</h2>
+                    <p>Monitor centers, occupancy, and emergency reports in one place.</p>
+                </div>
+
+                <div class="dashboard-stats-grid">
+                    <div class="dashboard-stat-card">
+                        <div class="stat-card-top">
+                            <p class="dashboard-stat-label">Total Evacuees</p>
+                            <div class="stat-icon-circle">
+                                <img src="assets/icons/parental-control.png" alt="Evacuees" class="stat-icon" />
+                            </div>
+                        </div>
+                        <h3>{{ totalEvacuees }}</h3>
+                    </div>
+
+                    <div class="dashboard-stat-card">
+                        <div class="stat-card-top">
+                            <p class="dashboard-stat-label">Total Centers</p>
+                            <div class="stat-icon-circle">
+                                <img src="assets/icons/health-clinic.png" alt="Centers" class="stat-icon" />
+                            </div>
+                        </div>
+                        <h3>{{ totalCenters }}</h3>
+                    </div>
+
+                    <div class="dashboard-stat-card">
+                        <div class="stat-card-top">
+                            <p class="dashboard-stat-label">Total Reports</p>
+                            <div class="stat-icon-circle">
+                                <img src="assets/icons/important.png" alt="Reports" class="stat-icon" />
+                            </div>
+                        </div>
+                        <h3>{{ totalReports }}</h3>
+                    </div>
+
+                    <div class="dashboard-stat-card">
+                        <div class="stat-card-top">
+                            <p class="dashboard-stat-label">Critical Centers</p>
+                            <div class="stat-icon-circle">
+                                <img src="assets/icons/warning.png" alt="Critical Centers" class="stat-icon" />
+                            </div>
+                        </div>
+                        <h3>{{ fullCenters }}</h3>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="card-header">
+                        <h3>Center Occupancy Chart</h3>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="occupancyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="card-header">
+                        <h3>Evacuation Centers Map</h3>
+                    </div>
+
+                    <div class="map-box">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-right">
+                <div class="panel-card">
+                    <div class="card-header">
+                        <h3>Center Overview</h3>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table class="evacuees-table">
+                            <thead>
+                                <tr>
+                                    <th>Center</th>
+                                    <th>Evacuees</th>
+                                    <th>Capacity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr *ngFor="let c of centers">
+                                    <td>
+                                        <button class="link-btn" type="button" (click)="viewDetails(c)">
+                                            {{ c.name }}
+                                        </button>
+                                    </td>
+                                    <td>{{ c.totalEvacuees }}</td>
+                                    <td>{{ c.capacity }}</td>
+                                    <td>
+                                        <span class="badge" [ngClass]="getStatusClass(c.status)">
+                                            {{ c.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                <tr *ngIf="!centers.length">
+                                    <td colspan="4" class="empty-cell">No centers found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <div class="card-header">
+                        <h3>Center Status Summary</h3>
+                    </div>
+
+                    <div class="summary-list">
+                        <div class="summary-item">
+                            <span>Normal Centers</span>
+                            <strong>{{ normalCenters }}</strong>
+                        </div>
+
+                        <div class="summary-item">
+                            <span>Near Full</span>
+                            <strong>{{ nearFullCenters }}</strong>
+                        </div>
+
+                        <div class="summary-item">
+                            <span>Full Capacity</span>
+                            <strong>{{ fullCenters }}</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CENTER COORDINATE FINDER -->
+                <div class="panel-card">
+                    <div class="card-header">
+                        <h3>Search Center Coordinates</h3>
+                    </div>
+
+                    <div class="locator-card">
+                        <div class="locator-form">
+                            <div class="form-group">
+                                <label>Center Name</label>
+                                <div class="locator-search-row">
+                                    <input type="text" [(ngModel)]="centerSearchQuery" placeholder="Enter center name"
+                                        (keyup.enter)="findCenter()" />
+                                    <button type="button" class="locator-btn" (click)="findCenter()">
+                                        Search
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="locator-message success"
+                                *ngIf="locatorMessage && locatorMessageType === 'success'">
+                                {{ locatorMessage }}
+                            </div>
+
+                            <div class="locator-message error" *ngIf="locatorMessage && locatorMessageType === 'error'">
+                                {{ locatorMessage }}
+                            </div>
+
+                            <div class="form-group">
+                                <label>Matched Center</label>
+                                <input type="text" [(ngModel)]="centerForm.name" placeholder="Center name" readonly />
+                            </div>
+
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" [(ngModel)]="centerForm.location" placeholder="Location" readonly />
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Latitude</label>
+                                    <input type="number" [(ngModel)]="centerForm.latitude" placeholder="Latitude"
+                                        step="any" readonly />
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Longitude</label>
+                                    <input type="number" [(ngModel)]="centerForm.longitude" placeholder="Longitude"
+                                        step="any" readonly />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EVACUATION CENTERS -->
+        <div *ngIf="activeView === 'centers'" class="content-section">
+            <div class="page-header">
+                <h2>Evacuation Centers</h2>
+                <p>Select a center to view full details and evacuee records.</p>
+            </div>
+
+            <div class="panel-card">
+                <ul class="center-list">
+                    <li *ngFor="let c of centers">
+                        <button class="center-btn" type="button" (click)="viewDetails(c)">
+                            <span>{{ c.name }}</span>
+                            <span class="center-meta">
+                                {{ c.totalEvacuees }}/{{ c.capacity }} • {{ c.status }}
+                            </span>
+                        </button>
+                    </li>
+
+                    <li *ngIf="!centers.length" class="empty-state">
+                        No evacuation centers found.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- CENTER DETAILS -->
+        <div *ngIf="activeView === 'centerDetails' && selectedCenter" class="content-section details-wrapper">
+            <div class="panel-card details-hero-card">
+                <div class="details-top">
+                    <button class="back-btn" type="button" (click)="backToCenters()">
+                        <img src="assets/icons/arrow.png" alt="back" class="btn-icon" />
+                    </button>
+                </div>
+
+                <div class="details-hero">
+                    <div class="details-hero-left">
+                        <p class="section-label">Center Details</p>
+                        <h2>{{ selectedCenter.name }}</h2>
+                    </div>
+
+                    <div class="details-stats">
+                        <div class="stat-box">
+                            <span class="stat-label">Capacity</span>
+                            <span class="stat-value">{{ selectedCenter.capacity }}</span>
+                        </div>
+
+                        <div class="stat-box">
+                            <span class="stat-label">Evacuees</span>
+                            <span class="stat-value">{{ selectedCenter.totalEvacuees }}</span>
+                        </div>
+
+                        <div class="stat-box">
+                            <span class="stat-label">Status</span>
+                            <span class="stat-value">{{ selectedCenter.status }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-card evacuees-card">
+                <div class="table-header">
+                    <h3>Evacuees</h3>
+                    <button class="action-btn icon-btn" type="button" (click)="printCenterEvacuees()">
+                        <img src="assets/icons/printer.png" alt="Print" class="btn-icon" />
+                        <span>Print</span>
+                    </button>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="evacuees-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Last</th>
+                                <th>First</th>
+                                <th>Middle</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Phone Number</th>
+                                <th>Pregnant</th>
+                                <th>PWD</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let e of centerEvacuees; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td [class.highlight-name]="isMatchedEvacuee(e)">
+                                    {{ e.lastname || '-' }}
+                                </td>
+                                <td [class.highlight-name]="isMatchedEvacuee(e)">
+                                    {{ e.firstname || '-' }}
+                                </td>
+                                <td [class.highlight-name]="isMatchedEvacuee(e)">
+                                    {{ e.middlename || '-' }}
+                                </td>
+                                <td>{{ e.age || '-' }}</td>
+                                <td>{{ e.gender || '-' }}</td>
+                                <td>{{ e.phone_number || '-' }}</td>
+                                <td>{{ formatYesBlank(e.pregnant) }}</td>
+                                <td>{{ formatYesBlank(e.pwd) }}</td>
+                            </tr>
+
+                            <tr *ngIf="!centerEvacuees.length">
+                                <td colspan="9" class="empty-cell">
+                                    No evacuees found for this center.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORTS -->
+        <div *ngIf="activeView === 'reports'" class="content-section">
+            <div class="page-header">
+                <h2>Reports</h2>
+                <p>Review submitted incident and center reports.</p>
+            </div>
+
+            <div class="panel-card">
+                <div class="table-wrap">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Center</th>
+                                <th>Official</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let r of reports">
+                                <td>{{ r.evacuation_location }}</td>
+                                <td>{{ r.username }}</td>
+                                <td>{{ r.report_type }}</td>
+                                <td>{{ r.details }}</td>
+                                <td>
+                                    <span class="report-status" [ngClass]="getReportStatusClass(r.status)">
+                                        {{ r.status }}
+                                    </span>
+                                </td>
+                                <td>{{ r.created_at | date:'medium' }}</td>
+                                <td>
+                                    <button class="resolve-btn icon-btn" type="button" (click)="resolveReport(r)"
+                                        [disabled]="(r.status || '').toLowerCase() === 'resolved'">
+                                        <img *ngIf="(r.status || '').toLowerCase() !== 'resolved'"
+                                            src="assets/icons/warning.png" alt="Resolve" class="btn-icon" />
+                                        <img *ngIf="(r.status || '').toLowerCase() === 'resolved'"
+                                            src="assets/icons/check.png" alt="Resolved" class="btn-icon" />
+                                        <span>
+                                            {{
+                                            (r.status || '').toLowerCase() === 'resolved'
+                                            ? 'Resolved'
+                                            : 'Resolve'
+                                            }}
+                                        </span>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr *ngIf="!reports.length">
+                                <td colspan="7" class="empty-cell">No reports available.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- TERMS OF USE -->
+<div class="terms-overlay" *ngIf="showTerms">
+    <div class="terms-modal">
+        <div class="terms-header">
+            <h2>Terms of Use</h2>
+            <button class="terms-close-btn" type="button" (click)="closeTerms()">Close</button>
+        </div>
+
+        <div class="terms-body">
+            <p>
+                Using this system indicates that you have read and accept these terms
+                and agree to follow them.
+            </p>
+
+            <p>
+                The Tuguegarao City Evacuation Tracking System provides access to
+                information about evacuation shelters and resident check-ins.
+            </p>
+
+            <p>
+                The City reserves the right to grant or deny access to the system
+                according to its policies.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- EMERGENCY CONTACT -->
+<div class="terms-overlay" *ngIf="showContact">
+    <div class="terms-modal">
+        <div class="terms-header">
+            <h2>Emergency Contact</h2>
+            <button class="terms-close-btn" type="button" (click)="closeContact()">Close</button>
+        </div>
+
+        <div class="terms-body">
+            <p><strong>TASK FORCE LINKOD CAGAYAN-QUICK</strong></p>
+            <p>COMMAND CENTER: 0917-111-3500</p>
+            <p>📞 PNP HOTLINE: 0905-800-5118</p>
+            <p>📞 BFP HOTLINE: 0917-811-3474</p>
+            <p>📍 Tuguegarao City, Cagayan</p>
+        </div>
+    </div>
+</div>
+
+<!-- LOGOUT -->
+<div class="logout-overlay" *ngIf="showLogoutConfirm">
+    <div class="logout-modal">
+        <div class="logout-icon-wrap">
+            <img src="assets/icons/logout.png" alt="Logout" class="logout-modal-icon" />
+        </div>
+
+        <h3>Log Out</h3>
+        <p>Are you sure you want to log out from your Admin account?</p>
+
+        <div class="logout-actions">
+            <button class="cancel-btn" type="button" (click)="cancelLogout()">Cancel</button>
+            <button class="confirm-btn" type="button" (click)="confirmLogout()">Log Out</button>
+        </div>
+    </div>
+</div>

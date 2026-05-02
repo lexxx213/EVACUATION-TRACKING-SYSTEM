@@ -1,0 +1,100 @@
+<div class="page-wrapper">
+  <div class="form-card">
+
+    <div class="form-header">
+      <h1>Evacuee Form</h1>
+      <p>Fill up evacuee information</p>
+    </div>
+
+    <form class="form-body" (ngSubmit)="saveEvacuee()">
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Last Name <span>*</span></label>
+          <input type="text" name="lastname" [(ngModel)]="form.lastname" placeholder="Enter last name">
+        </div>
+
+        <div class="form-group">
+          <label>First Name <span>*</span></label>
+          <input type="text" name="firstname" [(ngModel)]="form.firstname" placeholder="Enter first name">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Middle Name</label>
+          <input type="text" name="middlename" [(ngModel)]="form.middlename" placeholder="Optional">
+        </div>
+
+        <div class="form-group">
+          <label>Age</label>
+          <input type="number" name="age" [(ngModel)]="form.age" placeholder="Enter age">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Gender <span>*</span></label>
+          <select name="gender" [(ngModel)]="form.gender">
+            <option value="">Select gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number</label>
+          <div class="phone-box">
+            <span>+63</span>
+            <input type="text" name="phone" [(ngModel)]="form.phone" maxlength="10" placeholder="9XXXXXXXXX">
+          </div>
+          <small>Enter 10 digits only</small>
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <label>Evacuation Location <span>*</span></label>
+        <select name="evacuation_location" [(ngModel)]="form.evacuation_location">
+          <option value="">Select evacuation location</option>
+          <option *ngFor="let center of centers" [value]="center.name">
+            {{ center.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>PWD</label>
+          <select name="pwd" [(ngModel)]="form.pwd">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="form.gender === 'Female'">
+          <label>Pregnant</label>
+          <select name="pregnant" [(ngModel)]="form.pregnant">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button type="submit" class="save-btn" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save' }}
+        </button>
+
+        <button type="button" class="reset-btn" (click)="resetForm()">
+          Reset
+        </button>
+      </div>
+
+      <p class="loading" *ngIf="loading">Loading evacuation centers...</p>
+      <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+      <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+    </form>
+
+  </div>
+</div>

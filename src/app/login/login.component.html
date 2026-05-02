@@ -1,0 +1,183 @@
+<div class="login-page">
+
+  <!-- background image -->
+  <div class="login-bg-image"></div>
+  <div class="login-bg-overlay"></div>
+
+  <!-- background effects -->
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+  <div class="bg-glow glow-3"></div>
+
+  <!-- TOP LEFT BRAND -->
+  <div class="brand">
+    <div class="brand-logo">
+      <img src="assets/logo.png" alt="EvacTrack logo" />
+    </div>
+
+    <div class="brand-text">
+      <h1>EvacTrack</h1>
+      <p>Emergency Response and Evacuation Management System</p>
+    </div>
+  </div>
+
+  <!-- MAIN LOGIN WRAPPER -->
+  <div class="login-shell">
+
+    <!-- LEFT PANEL -->
+    <div class="welcome-panel">
+      <div class="welcome-overlay"></div>
+
+      <div class="welcome-content">
+        <span class="welcome-tag">WELCOME BACK</span>
+        <h2>Secure Access<br />Portal</h2>
+        <p>
+          Sign in to access emergency response information, personnel coordination,
+          incident monitoring, and operational records through the EvacTrack platform.
+        </p>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="login-card">
+      <div class="login-header">
+        <h2>Login</h2>
+        <span>Enter your credentials to continue</span>
+      </div>
+
+      <div class="login-body">
+
+        <!-- USERNAME -->
+        <div class="input-group no-toggle">
+          <div class="input-icon-wrap">
+            <img src="assets/icons/user.1.png" alt="Username icon" class="input-img" />
+          </div>
+
+          <input
+            type="text"
+            placeholder="Username"
+            [(ngModel)]="username"
+          />
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="input-group">
+          <div class="input-icon-wrap">
+            <img src="assets/icons/lock.png" alt="Password icon" class="input-img" />
+          </div>
+
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Password"
+            [(ngModel)]="password"
+          />
+
+          <div class="toggle-icon-img" (click)="togglePassword()">
+            <img *ngIf="!showPassword" src="assets/icons/eye.png" alt="Show password" class="toggle-img" />
+            <img *ngIf="showPassword" src="assets/icons/hidden.png" alt="Hide password" class="toggle-img" />
+          </div>
+        </div>
+
+        <div class="options-row">
+          <div class="terms">
+            <input type="checkbox" id="terms" [(ngModel)]="acceptedTerms" />
+            <label for="terms">
+              I accept the
+              <span class="terms-link" (click)="openTerms($event)">Terms of Use</span>
+            </label>
+          </div>
+        </div>
+
+        <div *ngIf="error" class="error-message">{{ error }}</div>
+
+        <button
+          class="login-btn"
+          [disabled]="!username || !password || !acceptedTerms"
+          [ngClass]="{
+            'enabled': username && password && acceptedTerms,
+            'disabled': !username || !password || !acceptedTerms
+          }"
+          (click)="login()"
+        >
+          <span>LOGIN</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMS MODAL -->
+  <div class="terms-modal" *ngIf="showTerms" (click)="closeTerms()">
+    <div class="terms-box" (click)="$event.stopPropagation()">
+
+      <div class="terms-header">
+        <h3>TERMS OF USE</h3>
+        <button type="button" (click)="closeTerms()">Close</button>
+      </div>
+
+      <div class="terms-content">
+        <p>
+          Using this facility on the website indicates that you have read and accept
+          these terms and conditions and agree to be bound by them.
+          <span class="text-danger">
+            If you do not accept these terms, do not use this facility.
+          </span>
+        </p>
+
+        <p>
+          EvacTrack reserves the right to modify these terms at any time and publish
+          notice of such modifications within the system. By continuing to access the
+          portal after notice has been published, you signify your agreement to be
+          bound by the updated terms.
+        </p>
+
+        <p>
+          This platform provides electronic access to emergency response information,
+          personnel coordination records, and other operational data. This information
+          is intended only for authorized users and should not be shared with
+          unauthorized individuals.
+        </p>
+
+        <p>
+          The organization reserves the right to grant or deny access to the system
+          in accordance with existing ICT and security policies.
+        </p>
+
+        <p>
+          Account credentials determine access to records and must remain current,
+          accurate, and secure. If a user believes that an account is no longer safe,
+          the password should be changed immediately and the administrator should be
+          informed as soon as possible.
+        </p>
+
+        <p>
+          While the system aims to ensure that information is accurate and updated,
+          some records may still require verification through the proper office or
+          authorized personnel. Users must report incorrect information immediately.
+        </p>
+
+        <p>
+          Any data presented in the system may be subject to change without prior
+          notice. Although the platform aims to provide reliable service at all times,
+          technical difficulties beyond control may temporarily make access
+          unavailable. Continuous and uninterrupted access is not guaranteed.
+        </p>
+      </div>
+
+      <div class="terms-footer">
+        <button type="button" class="accept-btn" (click)="acceptTermsFromModal()">
+          Accept & Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="login-success" *ngIf="loginSuccess">
+    <div class="success-box">
+      <div class="checkmark"></div>
+      <h3>Login Successful</h3>
+      <p>Redirecting...</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,289 @@
+* {
+  box-sizing: border-box;
+}
+
+.page-wrapper {
+  min-height: 100vh;
+  background: #f3f7fb;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 110px 20px 60px;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 960px;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
+  animation: fadeUp 0.5s ease;
+}
+
+.form-header {
+  background: linear-gradient(135deg, #0066c9, #1076dc);
+  color: white;
+  text-align: center;
+  padding: 35px 20px;
+}
+
+.form-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.form-header p {
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+
+.form-body {
+  padding: 30px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #14213d;
+}
+
+.form-group label span {
+  color: #e63946;
+}
+
+input,
+select {
+  width: 100%;
+  height: 55px;
+  border: 1px solid #dce3ec;
+  border-radius: 12px;
+  padding: 0 18px;
+  font-size: 15px;
+  outline: none;
+  background: white;
+  color: #14213d;
+  transition: 0.25s ease;
+}
+
+input:focus,
+select:focus {
+  border-color: #0d6fd1;
+  box-shadow: 0 0 0 4px rgba(13, 111, 209, 0.12);
+}
+
+.phone-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dce3ec;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: 0.25s ease;
+}
+
+.phone-box:focus-within {
+  border-color: #0d6fd1;
+  box-shadow: 0 0 0 4px rgba(13, 111, 209, 0.12);
+}
+
+.phone-box span {
+  height: 55px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  background: #eef3f9;
+  font-weight: 700;
+  color: #14213d;
+}
+
+.phone-box input {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+small {
+  display: block;
+  margin-top: 7px;
+  color: #6b7280;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+button {
+  height: 55px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.save-btn {
+  background: #29aa47;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #218c3b;
+  transform: translateY(-2px);
+}
+
+.reset-btn {
+  background: #eef2f7;
+  color: #334155;
+  border: 1px solid #dce3ec;
+}
+
+.reset-btn:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.success,
+.error,
+.loading {
+  text-align: center;
+  margin-top: 18px;
+  font-weight: 700;
+}
+
+.success {
+  color: #198754;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.loading {
+  color: #0d6fd1;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-wrapper {
+    padding-top: 40px;
+  }
+
+  .grid-2,
+  .button-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-body {
+    padding: 22px;
+  }
+}
+@media (max-width: 1024px) {
+  .form-card {
+    max-width: 90%;
+  }
+
+  .grid-2 {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-wrapper {
+    padding: 30px 14px;
+    align-items: flex-start;
+  }
+
+  .form-card {
+    max-width: 100%;
+    border-radius: 14px;
+  }
+
+  .form-header {
+    padding: 28px 16px;
+  }
+
+  .form-header h1 {
+    font-size: 24px;
+  }
+
+  .form-body {
+    padding: 22px 16px;
+  }
+
+  .grid-2,
+  .button-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  input,
+  select,
+  button,
+  .phone-box span {
+    height: 52px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-wrapper {
+    padding: 18px 10px;
+  }
+
+  .form-header h1 {
+    font-size: 21px;
+  }
+
+  .form-header p {
+    font-size: 12px;
+  }
+
+  .form-body {
+    padding: 18px 14px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  input,
+  select {
+    padding: 0 14px;
+  }
+
+  .button-row {
+    gap: 12px;
+  }
+}
